@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Next.js build files
+.next/
+out/
+
+# Logs
+logs
+*.log
+
+# Environment variables (IMPORTANT)
+.env
+.env.local
+.env.development.local
+.env.production.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+
+# Build / dist
+dist/
+build/
+
+# Cache
+.cache/
