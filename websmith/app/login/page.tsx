@@ -25,7 +25,7 @@ export default function LoginPage() {
 
     try {
       await login(email, password);
-      router.push("/");
+      router.push("/dashboard");
     } catch (err) {
       setError("Invalid email or password. Please try again.");
     } finally {
@@ -495,11 +495,6 @@ const styles: any = {
     borderRadius: "50%",
     margin: "0 auto",
     animation: "spin 0.8s linear infinite",
-  },
-
-  signupContainer: {
-    textAlign: "center",
-    marginBottom: "0",
   },
   dividerContainer: {
     display: "flex",

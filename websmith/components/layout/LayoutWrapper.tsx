@@ -15,6 +15,8 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
       const token = localStorage.getItem("token");
       if (token) {
         setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
       }
     }
   }, [pathname]); // also re-run auth check on path change just in case but usually localStorage triggers are sufficient

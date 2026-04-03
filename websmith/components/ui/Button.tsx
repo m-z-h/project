@@ -1,96 +1,104 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import React from "react";
 
-export default function Sidebar() {
-  const pathname = usePathname();
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "primary" | "secondary" | "danger" | "ghost";
+  size?: "sm" | "md" | "lg";
+  loading?: boolean;
+}
 
-  const menu = [
-    { name: "Dashboard", path: "/dashboard" },
-    { name: "Projects", path: "/projects" },
-    { name: "Clients", path: "/clients" },
-    { name: "Tasks", path: "/tasks" },
-    { name: "Team", path: "/team" },
-    { name: "Invoices", path: "/invoices" },
-  ];
+export default function Button({
+  children,
+  variant = "primary",
+  size = "md",
+  loading = false,
+  style,
+  disabled,
+  ...props
+}: ButtonProps) {
+  const getVariantStyle = () => {
+    switch (variant) {
+      case "primary":
+        return {
+          background: "#007AFF",
+          color: "#fff",
+          border: "none",
+        };
+      case "secondary":
+        return {
+          background: "rgba(0,122,255,0.1)",
+          color: "#007AFF",
+          border: "none",
+        };
+      case "danger":
+        return {
+          background: "#FF3B30",
+          color: "#fff",
+          border: "none",
+        };
+      case "ghost":
+        return {
+          background: "transparent",
+          color: "#1d1d1f",
+          border: "none",
+        };
+      default:
+        return {};
+    }
+  };
+
+  const getSizeStyle = () => {
+    switch (size) {
+      case "sm":
+        return { padding: "8px 16px", fontSize: "13px" };
+      case "md":
+        return { padding: "10px 20px", fontSize: "14px" };
+      case "lg":
+        return { padding: "14px 28px", fontSize: "16px" };
+      default:
+        return {};
+    }
+  };
 
   return (
-    <div
+    <button
+      disabled={disabled || loading}
       style={{
-        width: "250px",
-        height: "100vh",
-        background: "#0b0b0c",
-        color: "#fff",
-        padding: "30px 20px",
-        borderRight: "1px solid #1a1a1a",
-        display: "flex",
-        flexDirection: "column",
+        ...styles.button,
+        ...getVariantStyle(),
+        ...getSizeStyle(),
+        opacity: disabled || loading ? 0.6 : 1,
+        cursor: disabled || loading ? "not-allowed" : "pointer",
+        ...style,
       }}
+      onMouseEnter={(e) => {
+        if (!disabled && !loading) {
+          e.currentTarget.style.filter = "brightness(0.9)";
+          e.currentTarget.style.transform = "translateY(-1px)";
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!disabled && !loading) {
+          e.currentTarget.style.filter = "none";
+          e.currentTarget.style.transform = "translateY(0)";
+        }
+      }}
+      {...props}
     >
-      {/* 🔥 Brand */}
-      <h2
-        style={{
-          marginBottom: "35px",
-          fontWeight: 600,
-          letterSpacing: "0.5px",
-          color: "#ffffff",
-        }}
-      >
-        Websmith
-      </h2>
-
-      {/* 🔥 Menu */}
-      <nav style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-        {menu.map((item) => {
-          const active = pathname === item.path;
-
-          return (
-            <Link
-              key={item.path}
-              href={item.path}
-              style={{
-                padding: "12px 14px",
-                borderRadius: "8px",
-                textDecoration: "none",
-                fontSize: "14px",
-                fontWeight: 500,
-
-                // TEXT
-                color: active ? "#ffffff" : "#8e8e93",
-
-                // BACKGROUND
-                background: active ? "#1c1c1e" : "transparent",
-
-                // LEFT BORDER (APPLE STYLE)
-                borderLeft: active
-                  ? "3px solid #ffffff"
-                  : "3px solid transparent",
-
-                // ALIGNMENT
-                paddingLeft: "12px",
-
-                // ANIMATION
-                transition: "all 0.2s ease",
-              }}
-              onMouseEnter={(e) => {
-                if (!active) {
-                  e.currentTarget.style.background = "#161617";
-                  e.currentTarget.style.color = "#ffffff";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!active) {
-                  e.currentTarget.style.background = "transparent";
-                  e.currentTarget.style.color = "#8e8e93";
-                }
-              }}
-            >
-              {item.name}
-            </Link>
-          );
-        })}
-      </nav>
-    </div>
+      {loading ? "Loading..." : children}
+    </button>
   );
 }
+
+const styles: any = {
+  button: {
+    borderRadius: "10px",
+    fontWeight: 600,
+    transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    letterSpacing: "-0.2px",
+  },
+};

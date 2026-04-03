@@ -1,96 +1,114 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { X } from "lucide-react";
 
-export default function Sidebar() {
-  const pathname = usePathname();
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  children: React.ReactNode;
+}
 
-  const menu = [
-    { name: "Dashboard", path: "/dashboard" },
-    { name: "Projects", path: "/projects" },
-    { name: "Clients", path: "/clients" },
-    { name: "Tasks", path: "/tasks" },
-    { name: "Team", path: "/team" },
-    { name: "Invoices", path: "/invoices" },
-  ];
+export default function Modal({ isOpen, onClose, title, children }: ModalProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isOpen]);
+
+  if (!mounted || !isOpen) return null;
 
   return (
-    <div
-      style={{
-        width: "250px",
-        height: "100vh",
-        background: "#0b0b0c",
-        color: "#fff",
-        padding: "30px 20px",
-        borderRight: "1px solid #1a1a1a",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      {/* 🔥 Brand */}
-      <h2
-        style={{
-          marginBottom: "35px",
-          fontWeight: 600,
-          letterSpacing: "0.5px",
-          color: "#ffffff",
-        }}
+    <div style={styles.overlay} onClick={onClose}>
+      <div 
+        style={styles.modal} 
+        onClick={(e) => e.stopPropagation()}
+        className="modal-animate-in"
       >
-        Websmith
-      </h2>
-
-      {/* 🔥 Menu */}
-      <nav style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-        {menu.map((item) => {
-          const active = pathname === item.path;
-
-          return (
-            <Link
-              key={item.path}
-              href={item.path}
-              style={{
-                padding: "12px 14px",
-                borderRadius: "8px",
-                textDecoration: "none",
-                fontSize: "14px",
-                fontWeight: 500,
-
-                // TEXT
-                color: active ? "#ffffff" : "#8e8e93",
-
-                // BACKGROUND
-                background: active ? "#1c1c1e" : "transparent",
-
-                // LEFT BORDER (APPLE STYLE)
-                borderLeft: active
-                  ? "3px solid #ffffff"
-                  : "3px solid transparent",
-
-                // ALIGNMENT
-                paddingLeft: "12px",
-
-                // ANIMATION
-                transition: "all 0.2s ease",
-              }}
-              onMouseEnter={(e) => {
-                if (!active) {
-                  e.currentTarget.style.background = "#161617";
-                  e.currentTarget.style.color = "#ffffff";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!active) {
-                  e.currentTarget.style.background = "transparent";
-                  e.currentTarget.style.color = "#8e8e93";
-                }
-              }}
-            >
-              {item.name}
-            </Link>
-          );
-        })}
-      </nav>
+        <div style={styles.header}>
+          <h2 style={styles.title}>{title}</h2>
+          <button style={styles.closeBtn} onClick={onClose}>
+            <X size={20} />
+          </button>
+        </div>
+        <div style={styles.body}>{children}</div>
+      </div>
+      <style>{`
+        @keyframes modal-scale-in {
+          0% { transform: scale(0.95); opacity: 0; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        .modal-animate-in {
+          animation: modal-scale-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      `}</style>
     </div>
   );
 }
+
+const styles: any = {
+  overlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: "rgba(0,0,0,0.25)",
+    backdropFilter: "blur(8px)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1000,
+    padding: "20px",
+  },
+  modal: {
+    background: "rgba(255, 255, 255, 0.85)",
+    backdropFilter: "blur(20px)",
+    borderRadius: "20px",
+    width: "100%",
+    maxWidth: "500px",
+    boxShadow: "0 24px 48px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.05)",
+    overflow: "hidden",
+    display: "flex",
+    flexDirection: "column",
+  },
+  header: {
+    padding: "20px 24px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderBottom: "1px solid rgba(0,0,0,0.05)",
+  },
+  title: {
+    margin: 0,
+    fontSize: "17px",
+    fontWeight: 600,
+    color: "#1d1d1f",
+    letterSpacing: "-0.2px",
+  },
+  closeBtn: {
+    background: "rgba(0,0,0,0.05)",
+    border: "none",
+    borderRadius: "50%",
+    padding: "6px",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    color: "#86868b",
+    transition: "background 0.2s ease",
+  },
+  body: {
+    padding: "24px",
+    maxHeight: "80vh",
+    overflowY: "auto",
+  },
+};

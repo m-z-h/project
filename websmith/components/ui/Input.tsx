@@ -1,96 +1,69 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import React from "react";
 
-export default function Sidebar() {
-  const pathname = usePathname();
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
+  error?: string;
+}
 
-  const menu = [
-    { name: "Dashboard", path: "/dashboard" },
-    { name: "Projects", path: "/projects" },
-    { name: "Clients", path: "/clients" },
-    { name: "Tasks", path: "/tasks" },
-    { name: "Team", path: "/team" },
-    { name: "Invoices", path: "/invoices" },
-  ];
-
+export default function Input({
+  label,
+  error,
+  style,
+  ...props
+}: InputProps) {
   return (
-    <div
-      style={{
-        width: "250px",
-        height: "100vh",
-        background: "#0b0b0c",
-        color: "#fff",
-        padding: "30px 20px",
-        borderRight: "1px solid #1a1a1a",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      {/* 🔥 Brand */}
-      <h2
+    <div style={styles.container}>
+      {label && <label style={styles.label}>{label}</label>}
+      <input
         style={{
-          marginBottom: "35px",
-          fontWeight: 600,
-          letterSpacing: "0.5px",
-          color: "#ffffff",
+          ...styles.input,
+          border: error ? "1.5px solid #FF3B30" : "1.5px solid #E5E5EA",
+          ...style,
         }}
-      >
-        Websmith
-      </h2>
-
-      {/* 🔥 Menu */}
-      <nav style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-        {menu.map((item) => {
-          const active = pathname === item.path;
-
-          return (
-            <Link
-              key={item.path}
-              href={item.path}
-              style={{
-                padding: "12px 14px",
-                borderRadius: "8px",
-                textDecoration: "none",
-                fontSize: "14px",
-                fontWeight: 500,
-
-                // TEXT
-                color: active ? "#ffffff" : "#8e8e93",
-
-                // BACKGROUND
-                background: active ? "#1c1c1e" : "transparent",
-
-                // LEFT BORDER (APPLE STYLE)
-                borderLeft: active
-                  ? "3px solid #ffffff"
-                  : "3px solid transparent",
-
-                // ALIGNMENT
-                paddingLeft: "12px",
-
-                // ANIMATION
-                transition: "all 0.2s ease",
-              }}
-              onMouseEnter={(e) => {
-                if (!active) {
-                  e.currentTarget.style.background = "#161617";
-                  e.currentTarget.style.color = "#ffffff";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!active) {
-                  e.currentTarget.style.background = "transparent";
-                  e.currentTarget.style.color = "#8e8e93";
-                }
-              }}
-            >
-              {item.name}
-            </Link>
-          );
-        })}
-      </nav>
+        onFocus={(e) => {
+          if (!error) e.currentTarget.style.borderColor = "#007AFF";
+          e.currentTarget.style.boxShadow = "0 0 0 4px rgba(0, 122, 255, 0.1)";
+        }}
+        onBlur={(e) => {
+          if (!error) e.currentTarget.style.borderColor = "#E5E5EA";
+          e.currentTarget.style.boxShadow = "none";
+        }}
+        {...props}
+      />
+      {error && <p style={styles.errorText}>{error}</p>}
     </div>
   );
 }
+
+const styles: any = {
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "6px",
+    width: "100%",
+    marginBottom: "16px",
+  },
+  label: {
+    fontSize: "13px",
+    fontWeight: 500,
+    color: "#86868b",
+    marginLeft: "4px",
+  },
+  input: {
+    padding: "12px 16px",
+    borderRadius: "10px",
+    fontSize: "15px",
+    background: "#fff",
+    color: "#1d1d1f",
+    transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+    outline: "none",
+    width: "100%",
+  },
+  errorText: {
+    fontSize: "12px",
+    color: "#FF3B30",
+    marginLeft: "4px",
+  },
+};

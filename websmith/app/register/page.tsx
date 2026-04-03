@@ -26,8 +26,7 @@ export default function RegisterPage() {
 
     try {
       await register(name, email, password);
-      // Optional: automatically login or push to login
-      router.push("/login");
+      router.push("/dashboard");
     } catch (err: any) {
       setError(err.response?.data?.message || err.message || "Registration failed. Please try again.");
     } finally {
@@ -517,10 +516,6 @@ const styles: any = {
     gap: "10px",
   },
 
-  signupContainer: {
-    textAlign: "center",
-    marginBottom: "0",
-  },
 
   signupText: {
     fontSize: "14px",

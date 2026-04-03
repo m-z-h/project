@@ -11,7 +11,7 @@ export default function Sidebar() {
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to log out?")) {
       localStorage.removeItem("token");
-      router.push("/login");
+      router.push("/");
     }
   };
 

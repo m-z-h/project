@@ -20,8 +20,19 @@ export const register = async (req: Request, res: Response) => {
       password: hashed,
     });
 
-    res.json({ message: "User created", user });
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET || "secret",
+      { expiresIn: "1d" }
+    );
+
+    res.json({ 
+      message: "User created", 
+      token,
+      user: { id: user._id, name: user.name, email: user.email } 
+    });
   } catch (err) {
+    console.error("Register Error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };

@@ -21,6 +21,14 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const handleLogout = () => {
+    if (window.confirm("Are you sure you want to log out?")) {
+      localStorage.removeItem("token");
+      setIsLoggedIn(false);
+      router.push("/");
+    }
+  };
+
   const handleNavClick = (link: string) => {
     setActiveLink(link);
   };
@@ -46,7 +54,7 @@ export default function Navbar() {
 
         {/* Links */}
         <div style={styles.navLinks}>
-          {["Home", "About", "Pricing", "Contact"].map((item) => (
+          {["Home", "Services", "About Us", "Blog", "Contact Us"].map((item) => (
             <button
               key={item}
               onClick={() => handleNavClick(item.toLowerCase())}
@@ -72,6 +80,13 @@ export default function Navbar() {
               >
                 Dashboard
               </button>
+              <button
+                style={styles.logoutBtn}
+                onClick={handleLogout}
+                className="logout-btn-hover"
+              >
+                Logout
+              </button>
               <div
                 style={styles.profileAvatar}
                 className="profile-hover"
@@ -89,7 +104,7 @@ export default function Navbar() {
               onClick={() => router.push("/login")}
               className="login-btn-hover"
             >
-              Login / Register
+              sign in
             </button>
           )}
         </div>
@@ -102,6 +117,10 @@ export default function Navbar() {
         .profile-hover:hover {
           transform: scale(1.05) translateY(-2px);
           box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+        }
+        .logout-btn-hover:hover {
+          color: #FF3B30 !important;
+          background: rgba(255, 59, 48, 0.08) !important;
         }
       `}</style>
     </nav>
@@ -221,5 +240,16 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: "pointer",
     boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
     transition: "all 0.2s ease",
+  },
+  logoutBtn: {
+    background: "transparent",
+    color: "#8E8E93",
+    border: "none",
+    padding: "8px 12px",
+    fontSize: "14px",
+    fontWeight: 500,
+    cursor: "pointer",
+    transition: "all 0.2s ease",
+    borderRadius: "20px",
   },
 };
