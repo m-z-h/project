@@ -1,11 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    if (window.confirm("Are you sure you want to log out?")) {
+      localStorage.removeItem("token");
+      router.push("/login");
+    }
+  };
 
   const menu = [
     {
@@ -114,6 +122,41 @@ export default function Sidebar() {
           })}
         </div>
       ))}
+
+      {/* LOGOUT BUTTON */}
+      <div style={{ marginTop: "auto", paddingTop: "24px" }}>
+        <button
+          onClick={handleLogout}
+          style={{
+            ...styles.link,
+            width: "100%",
+            textAlign: "left",
+            background: "transparent",
+            border: "none",
+            borderLeft: "3px solid transparent",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "#ffe5e5";
+            e.currentTarget.style.transform = "translateX(4px)";
+            e.currentTarget.style.color = "#d32f2f";
+            e.currentTarget.style.borderLeft = "3px solid #d32f2f";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "transparent";
+            e.currentTarget.style.transform = "translateX(0)";
+            e.currentTarget.style.color = "#555";
+            e.currentTarget.style.borderLeft = "3px solid transparent";
+          }}
+          onMouseDown={(e) => {
+            e.currentTarget.style.transform = "scale(0.98)";
+          }}
+          onMouseUp={(e) => {
+            e.currentTarget.style.transform = "translateX(4px)";
+          }}
+        >
+          Logout
+        </button>
+      </div>
 
       {/* Hover Animation Styles */}
       <style>{`

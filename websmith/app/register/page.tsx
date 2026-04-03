@@ -1,22 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { login } from "../../core/services/authService";
+import { register } from "../../core/services/authService";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      setError("Please enter both email and password");
+  const handleRegister = async () => {
+    if (!name || !email || !password) {
+      setError("Please fill in all fields");
       return;
     }
 
@@ -24,10 +25,11 @@ export default function LoginPage() {
     setError("");
 
     try {
-      await login(email, password);
-      router.push("/");
-    } catch (err) {
-      setError("Invalid email or password. Please try again.");
+      await register(name, email, password);
+      // Optional: automatically login or push to login
+      router.push("/login");
+    } catch (err: any) {
+      setError(err.response?.data?.message || err.message || "Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -35,7 +37,7 @@ export default function LoginPage() {
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      handleLogin();
+      handleRegister();
     }
   };
 
@@ -64,8 +66,8 @@ export default function LoginPage() {
 
         {/* Welcome text */}
         <div style={styles.header}>
-          <h2 style={styles.title}>Welcome back</h2>
-          <p style={styles.subtitle}>Sign in to continue to your workspace</p>
+          <h2 style={styles.title}>Create an account</h2>
+          <p style={styles.subtitle}>Sign up to start your workspace</p>
         </div>
 
         {/* Error message */}
@@ -74,6 +76,24 @@ export default function LoginPage() {
             <span style={styles.errorText}>{error}</span>
           </div>
         )}
+
+        {/* Name input */}
+        <div style={styles.inputGroup}>
+          <label style={styles.label}>Full Name</label>
+          <div style={styles.inputWrapper}>
+            <User size={18} style={styles.inputIcon} />
+            <input
+              type="text"
+              placeholder="John Doe"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onKeyPress={handleKeyPress}
+              style={styles.input}
+              disabled={isLoading}
+              className="input-focus"
+            />
+          </div>
+        </div>
 
         {/* Email input */}
         <div style={styles.inputGroup}>
@@ -100,7 +120,7 @@ export default function LoginPage() {
             <Lock size={18} style={styles.inputIcon} />
             <input
               type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
+              placeholder="Create a password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               onKeyPress={handleKeyPress}
@@ -119,31 +139,21 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Forgot password link */}
-        <div style={styles.forgotContainer}>
-          <a 
-            href="#" 
-            style={styles.forgotLink}
-            className="forgot-link-hover"
-          >
-            Forgot password?
-          </a>
-        </div>
-
-        {/* Sign In button - Gray with Green hover + Sidebar animation */}
+        {/* Sign Up button - Gray with Green hover + Sidebar animation */}
         <button
-          onClick={handleLogin}
+          onClick={handleRegister}
           disabled={isLoading}
           style={{
             ...styles.signinButton,
             ...(isLoading ? styles.signinButtonDisabled : {}),
+            marginTop: "12px",
           }}
           className="signin-button"
         >
           {isLoading ? (
             <div style={styles.spinner}></div>
           ) : (
-            "Sign In"
+            "Create Account"
           )}
         </button>
 
@@ -169,15 +179,15 @@ export default function LoginPage() {
           Google
         </button>
 
-        {/* Sign up link with Sidebar animation */}
+        {/* Sign in link */}
         <div style={styles.signupContainer}>
-          <span style={styles.signupText}>Don&apos;t have an account?</span>
+          <span style={styles.signupText}>Already have an account?</span>
           <button 
-            onClick={() => router.push("/register")} 
+            onClick={() => router.push("/login")} 
             style={styles.signupButton}
             className="signup-button"
           >
-            Create one
+            Sign in
           </button>
         </div>
       </div>
@@ -227,18 +237,6 @@ export default function LoginPage() {
         .eye-button-hover:hover {
           transform: scale(1.1);
           color: #007AFF;
-        }
-        
-        /* Forgot Link Hover */
-        .forgot-link-hover {
-          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-          display: inline-block;
-        }
-        
-        .forgot-link-hover:hover {
-          transform: translateX(4px);
-          color: #ee3902e7 !important;
-          text-decoration: underline !important;
         }
         
         /* SIGN IN BUTTON - Sidebar Style Animation */
@@ -406,7 +404,7 @@ const styles: any = {
   },
 
   inputGroup: {
-    marginBottom: "20px",
+    marginBottom: "16px",
   },
 
   label: {
@@ -456,18 +454,6 @@ const styles: any = {
     alignItems: "center",
   },
 
-  forgotContainer: {
-    textAlign: "right",
-    marginBottom: "28px",
-  },
-
-  forgotLink: {
-    fontSize: "13px",
-    color: "#007AFF",
-    textDecoration: "none",
-    fontWeight: 500,
-  },
-
   signinButton: {
     width: "100%",
     padding: "14px",
@@ -497,10 +483,6 @@ const styles: any = {
     animation: "spin 0.8s linear infinite",
   },
 
-  signupContainer: {
-    textAlign: "center",
-    marginBottom: "0",
-  },
   dividerContainer: {
     display: "flex",
     alignItems: "center",
@@ -534,10 +516,12 @@ const styles: any = {
     justifyContent: "center",
     gap: "10px",
   },
+
   signupContainer: {
     textAlign: "center",
     marginBottom: "0",
   },
+
   signupText: {
     fontSize: "14px",
     color: "#8E8E93",

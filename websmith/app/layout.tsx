@@ -1,5 +1,4 @@
-import Sidebar from "../components/layout/Sidebar";
-import CrispChat from "../components/ui/crispchat";  // ← ADD THIS IMPORT
+import LayoutWrapper from "../components/layout/LayoutWrapper";
 
 export const metadata = {
   title: "Websmith",
@@ -21,18 +20,7 @@ export default function RootLayout({
           fontFamily: "-apple-system, BlinkMacSystemFont, sans-serif",
         }}
       >
-        <Sidebar />
-
-        <main
-          style={{
-            flex: 1,
-            padding: "30px",
-          }}
-        >
-          {children}
-        </main>
-
-        <CrispChat />  {/* ← ADD THIS LINE */}
+        <LayoutWrapper>{children}</LayoutWrapper>
       </body>
     </html>
   );
