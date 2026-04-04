@@ -8,6 +8,7 @@ export default function Navbar() {
   const [activeLink, setActiveLink] = useState("home");
   const [scrolled, setScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showServicesDropdown, setShowServicesDropdown] = useState(false);
 
   useEffect(() => {
     // Check if token exists in localStorage (Client side only)
@@ -31,6 +32,21 @@ export default function Navbar() {
 
   const handleNavClick = (link: string) => {
     setActiveLink(link);
+    if (link === "about us") {
+      router.push("/about");
+    } else if (link === "blog") {
+      router.push("/blog");
+    } else if (link === "home") {
+      router.push("/");
+    } else {
+      // Internal scrolling if on home page
+      const element = document.getElementById(link.replace(" ", ""));
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      } else {
+        router.push("/#" + link.replace(" ", ""));
+      }
+    }
   };
 
   return (
@@ -55,17 +71,58 @@ export default function Navbar() {
         {/* Links */}
         <div style={styles.navLinks}>
           {["Home", "Services", "About Us", "Blog", "Contact Us"].map((item) => (
-            <button
-              key={item}
-              onClick={() => handleNavClick(item.toLowerCase())}
-              style={{
-                ...styles.navLink,
-                ...(activeLink === item.toLowerCase() ? styles.activeNavLink : {}),
-              }}
-              className="nav-link-hover"
+            <div 
+              key={item} 
+              style={{ position: "relative" }}
+              onMouseEnter={() => item === "Services" && setShowServicesDropdown(true)}
+              onMouseLeave={() => item === "Services" && setShowServicesDropdown(false)}
             >
-              {item}
-            </button>
+              <button
+                onClick={() => handleNavClick(item.toLowerCase())}
+                style={{
+                  ...styles.navLink,
+                  ...(activeLink === item.toLowerCase() ? styles.activeNavLink : {}),
+                }}
+                className="nav-link-hover"
+              >
+                {item}
+                {item === "Services" && (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: "4px", transition: "transform 0.3s ease", transform: showServicesDropdown ? "rotate(180deg)" : "rotate(0deg)" }}>
+                    <path d="m6 9 6 6 6-6"/>
+                  </svg>
+                )}
+              </button>
+
+              {item === "Services" && (
+                <div style={{
+                  ...styles.dropdown,
+                  opacity: showServicesDropdown ? 1 : 0,
+                  visibility: showServicesDropdown ? "visible" : "hidden",
+                  transform: showServicesDropdown ? "translateY(0)" : "translateY(10px)",
+                }} className="dropdown-glass">
+                  {[
+                    "Custom Software",
+                    "Web Architecture",
+                    "Cloud Strategy",
+                    "Security Protocols",
+                    "Performance Tuning",
+                    "BPO & KPO Solutions"
+                  ].map((sub) => (
+                    <button 
+                      key={sub} 
+                      style={styles.dropdownItem} 
+                      className="dropdown-item-hover"
+                      onClick={() => {
+                        handleNavClick("services");
+                        setShowServicesDropdown(false);
+                      }}
+                    >
+                      {sub}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
         </div>
 
@@ -121,6 +178,20 @@ export default function Navbar() {
         .logout-btn-hover:hover {
           color: #FF3B30 !important;
           background: rgba(255, 59, 48, 0.08) !important;
+        }
+        .dropdown-glass {
+          background: rgba(255, 255, 255, 0.7) !important;
+          backdrop-filter: blur(20px) saturate(180%) !important;
+          border: 1px solid rgba(255, 255, 255, 0.5) !important;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+        }
+        .dropdown-item-hover {
+          transition: all 0.2s ease;
+        }
+        .dropdown-item-hover:hover {
+          background: rgba(0, 122, 255, 0.08);
+          color: #007AFF !important;
+          padding-left: 20px !important;
         }
       `}</style>
     </nav>
@@ -192,10 +263,37 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: "pointer",
     padding: "8px 16px",
     borderRadius: "20px",
+    display: "flex",
+    alignItems: "center",
   },
   activeNavLink: {
     color: "#1C1C1E",
     background: "rgba(0,0,0,0.04)",
+  },
+  dropdown: {
+    position: "absolute",
+    top: "calc(100% + 10px)",
+    left: "0",
+    width: "220px",
+    borderRadius: "16px",
+    padding: "8px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    zIndex: 1000,
+  },
+  dropdownItem: {
+    background: "transparent",
+    border: "none",
+    padding: "10px 14px",
+    textAlign: "left",
+    borderRadius: "10px",
+    fontSize: "14px",
+    fontWeight: 500,
+    color: "#48484A",
+    cursor: "pointer",
+    transition: "all 0.2s ease",
   },
   navActions: {
     display: "flex",

@@ -98,7 +98,7 @@ export default function LandingPage() {
                         </button>
                         <button
                             style={styles.secondaryBtn}
-                            onClick={() => scrollToSection("aboutus")}
+                            onClick={() => router.push("/about")}
                             className="secondary-btn-hover"
                         >
                             Our Mission
@@ -161,6 +161,15 @@ export default function LandingPage() {
                                     <span style={styles.statValue}>99%</span>
                                     <span style={styles.statLabel}>Client Satisfaction</span>
                                 </div>
+                            </div>
+                            <div style={{ marginTop: "32px", display: "flex", justifyContent: "flex-start" }}>
+                                <button 
+                                    style={styles.secondaryBtn} 
+                                    className="secondary-btn-hover"
+                                    onClick={() => router.push("/about")}
+                                >
+                                    Explore Our Full Story →
+                                </button>
                             </div>
                         </div>
                         <div style={styles.aboutVisual}>

@@ -33,8 +33,8 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
   // Core Login paths always strip out sidebars.
   const isAuthPage = pathname === "/login" || pathname === "/register";
   
-  // Conditionally hide sidebar on root ("/") ONLY if no valid token is found.
-  const hideSidebar = isAuthPage || (pathname === "/" && !isLoggedIn);
+  // Conditionally hide sidebar on root ("/") and "/about" & "/blog" ONLY if no valid token is found.
+  const hideSidebar = isAuthPage || ((pathname === "/" || pathname === "/about" || pathname === "/blog") && !isLoggedIn);
 
   if (hideSidebar) {
     return (
